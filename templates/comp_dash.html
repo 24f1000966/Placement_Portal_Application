@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Company Dashboard{% endblock %}
+
+{% block content %}
+<h3>Company Dashboard</h3>
+
+<p class="mt-3">
+    Welcome, <strong>{{ current_user.name }}</strong>
+</p>
+
+<div class="alert alert-info mt-3">
+    You can create placement drives and view student applications from here.
+</div>
+{% endblock %}

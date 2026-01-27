@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">Admin Dashboard</h3>
+
+<h5>Company Registrations</h5>
+
+<table class="table table-bordered mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>Company Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for company in companies %}
+        <tr>
+            <td>{{ company.company_name }}</td>
+            <td>{{ company.approval_status }}</td>
+            <td>
+                {% if company.approval_status != 'Approved' %}
+                    <a href="{{ url_for('approve_company', company_id=company.id) }}"
+                       class="btn btn-sm btn-success">
+                        Approve
+                    </a>
+                {% else %}
+                    <span class="text-success">Approved</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
