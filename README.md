@@ -1,12 +1,10 @@
 Placement Portal Application
 
-Course: MAD-1 (Modern Application Development – 1)
-Institute: IIT Madras
+Course: MAD-1 (Modern Application Development – 1
 
 Overview:
 
-A role-based web application to manage campus placement activities for Admin, Company, and Student users.
-The system streamlines company approvals, placement drives, student applications, and placement history.
+A role-based web application to manage campus placement activities for Admin, Company, and Student users.The system streamlines company approvals, placement drives, student applications, and placement history.
 
 Tech Stack
 
