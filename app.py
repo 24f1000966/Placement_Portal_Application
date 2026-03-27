@@ -1,69 +1,71 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+import os
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, send_from_directory
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = 'placement-portal-secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SECRET_KEY'] = 'placement_secret_key_999_updated'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///placement.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SESSION_COOKIE_NAME'] = 'placement_portal_session'
+app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 db = SQLAlchemy(app)
-login_manager = LoginManager(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
-class User(UserMixin, db.Model):
-    __tablename__ = 'users'
-
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    role = db.Column(db.String(20), nullable=False)
-
-    company_profile = db.relationship('CompanyProfile', backref='user', uselist=False)
-    student_profile = db.relationship('StudentProfile', backref='user', uselist=False)
+    role = db.Column(db.String(20), nullable=False) 
+    is_active = db.Column(db.Boolean, default=True)
 
 class CompanyProfile(db.Model):
-    __tablename__ = 'company_profiles'
-
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
-    company_name = db.Column(db.String(150), nullable=False)
-    approval_status = db.Column(db.String(20), default='Pending')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    company_name = db.Column(db.String(100), nullable=False)
+    hr_contact = db.Column(db.String(100))
+    website = db.Column(db.String(200))
+    approval_status = db.Column(db.String(20), default='Pending') 
+    user = db.relationship('User', backref=db.backref('company_profile', uselist=False, cascade='all, delete-orphan'))
 
 class StudentProfile(db.Model):
-    __tablename__ = 'student_profiles'
-
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True)
-    roll_no = db.Column(db.String(50), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    roll_no = db.Column(db.String(50), nullable=False, unique=True)
+    contact_info = db.Column(db.String(100))
+    resume_file = db.Column(db.String(200)) # stores filename
+    user = db.relationship('User', backref=db.backref('student_profile', uselist=False, cascade='all, delete-orphan'))
 
 class PlacementDrive(db.Model):
-    __tablename__ = 'placement_drives'
-
     id = db.Column(db.Integer, primary_key=True)
-    company_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    job_title = db.Column(db.String(150), nullable=False)
-    status = db.Column(db.String(20), default='Pending')
-
-    applications = db.relationship('Application', backref='drive', lazy=True)
+    company_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    job_title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    eligibility = db.Column(db.String(200), nullable=False)
+    deadline = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String(20), default='Pending') 
+    company = db.relationship('User', backref=db.backref('drives', cascade='all, delete-orphan'))
 
 class Application(db.Model):
-    __tablename__ = 'applications'
-
     id = db.Column(db.Integer, primary_key=True)
-    student_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    drive_id = db.Column(db.Integer, db.ForeignKey('placement_drives.id'))
+    student_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    drive_id = db.Column(db.Integer, db.ForeignKey('placement_drive.id'), nullable=False)
     applied_date = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default='Applied')
+    status = db.Column(db.String(20), default='Applied') 
+    student = db.relationship('User', backref=db.backref('applications', cascade='all, delete-orphan'))
+    drive = db.relationship('PlacementDrive', backref=db.backref('applications', cascade='all, delete-orphan'))
 
-    __table_args__ = (
-        db.UniqueConstraint('student_user_id', 'drive_id', name='unique_application'),
-    )
-
-
+    __table_args__ = (db.UniqueConstraint('student_user_id', 'drive_id', name='uq_student_drive'),)
 @app.route('/')
 def index():
     return render_template('index.html')
