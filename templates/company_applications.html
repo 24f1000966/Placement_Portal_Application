@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <h2 class="text-primary fw-bold mb-0">Applications for: <span class="text-dark">{{ drive.job_title }}</span></h2>
+    <a href="{{ url_for('company_dashboard') }}" class="btn btn-outline-secondary fw-semibold rounded-pill px-4 shadow-sm">Back to Dashboard</a>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4">Student Name</th>
+                        <th>Roll No</th>
+                        <th>Email</th>
+                        <th>Current Status</th>
+                        <th class="pe-4 text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-bold text-dark">{{ app.student.name }}</td>
+                        <td class="text-secondary fw-semibold">{{ app.student.student_profile.roll_no }}</td>
+                        <td class="text-muted">{{ app.student.email }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if app.status == 'Selected' %}bg-success
+                                {% elif app.status == 'Rejected' %}bg-danger
+                                {% elif app.status == 'Shortlisted' %}bg-info text-dark
+                                {% elif app.status == 'Applied' %}bg-secondary
+                                {% else %}bg-secondary{% endif %} rounded-pill px-3 py-2">
+                                {{ app.status }}
+                            </span>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <a href="{{ url_for('review_application', application_id=app.id) }}" class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">Review Application</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center py-5 text-muted fw-semibold">No students have applied for this drive yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

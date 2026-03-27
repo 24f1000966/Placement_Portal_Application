@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-info text-white text-center py-3">
+                <h4 class="mb-0">Company Registration</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Representative Name</label>
+                        <input type="text" name="name" class="form-control bg-light" required placeholder="Jane Smith">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Work Email</label>
+                        <input type="email" name="email" class="form-control bg-light" required placeholder="hr@company.com">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Company Name</label>
+                        <input type="text" name="company_name" class="form-control bg-light" required placeholder="Tech Innovators Inc.">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">HR Contact (Phone/Email)</label>
+                        <input type="text" name="hr_contact" class="form-control bg-light" placeholder="HR Phone or Email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Company Website</label>
+                        <input type="url" name="website" class="form-control bg-light" placeholder="https://www.company.com">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Password</label>
+                        <input type="password" name="password" class="form-control bg-light" required placeholder="Choose a secure password">
+                    </div>
+                    <button type="submit" class="btn btn-info btn-lg w-100 text-white fw-bold shadow-sm">Register Company</button>
+                </form>
+                <div class="text-center mt-4 text-muted">
+                    Already registered? <a href="{{ url_for('login') }}" class="text-decoration-none text-info">Login here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

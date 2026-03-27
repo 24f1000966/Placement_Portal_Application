@@ -1,57 +1,29 @@
-{% extends 'base.html' %}
-
-{% block title %}Login{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-
-                <h4 class="text-center mb-4">Login</h4>
-
-                <form method="post">
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            class="form-control"
-                            required
-                        >
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 mt-5">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0">Welcome Back</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Email address</label>
+                        <input type="email" name="email" class="form-control form-control-lg bg-light" required placeholder="name@example.com">
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            class="form-control"
-                            required
-                        >
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Password</label>
+                        <input type="password" name="password" class="form-control form-control-lg bg-light" required placeholder="••••••••">
                     </div>
-
-                    <button class="btn btn-primary w-100">
-                        Login
-                    </button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">Login</button>
                 </form>
-
-                <hr>
-
-                <div class="text-center">
-                    <p class="mb-1">New Student?</p>
-                    <a href="{{ url_for('register_student') }}" class="btn btn-outline-success btn-sm">
-                        Register as Student
-                    </a>
+                <div class="text-center mt-4 text-muted">
+                    Don't have an account? <br>
+                    <a href="{{ url_for('register_student') }}" class="text-decoration-none">Register as Student</a> | 
+                    <a href="{{ url_for('register_company') }}" class="text-decoration-none">Register as Company</a>
                 </div>
-
-                <div class="text-center mt-2">
-                    <p class="mb-1">New Company?</p>
-                    <a href="{{ url_for('register_company') }}" class="btn btn-outline-warning btn-sm">
-                        Register as Company
-                    </a>
-                </div>
-
             </div>
         </div>
     </div>

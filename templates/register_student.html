@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 mt-4">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="mb-0">Student Registration</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Full Name</label>
+                        <input type="text" name="name" class="form-control bg-light" required placeholder="John Doe">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Email address</label>
+                        <input type="email" name="email" class="form-control bg-light" required placeholder="john@university.edu">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Roll Number</label>
+                        <input type="text" name="roll_no" class="form-control bg-light" required placeholder="ex: 2023CS101">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Contact Info (Phone/Address)</label>
+                        <input type="text" name="contact_info" class="form-control bg-light" placeholder="Contact number or short address">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Password</label>
+                        <input type="password" name="password" class="form-control bg-light" required placeholder="Choose a strong password">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">Register</button>
+                </form>
+                <div class="text-center mt-4 text-muted">
+                    Already have an account? <a href="{{ url_for('login') }}" class="text-decoration-none">Login here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

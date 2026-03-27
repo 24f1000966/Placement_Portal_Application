@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <h2 class="text-primary fw-bold mb-0">Company Details</h2>
+    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-secondary fw-semibold rounded-pill px-4 shadow-sm">Back to Dashboard</a>
+</div>
+
+<div class="card shadow-sm border-0 mb-5 rounded-4 bg-light">
+    <div class="card-body p-5">
+        <h3 class="fw-bold text-dark mb-3">{{ company.company_name }}</h3>
+        <h6 class="fw-bold text-secondary mb-3 border-bottom pb-2">Overview / Description</h6>
+        <p class="text-muted mb-4 fs-5" style="line-height: 1.6;">
+            {{ company.company_name }} is actively hiring talented individuals through the University Placement Portal. 
+            Review their currently open drives below to secure an opportunity with them.
+            {% if company.website %}
+            <br><a href="{{ company.website }}" target="_blank" class="btn btn-sm btn-link text-primary mt-2 px-0 text-decoration-none fw-bold">Visit Official Website &rarr;</a>
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white py-3 border-bottom rounded-top-4">
+        <h5 class="mb-0 text-info fw-bold">Current Drives</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr><th class="ps-4">Drive Name (Job Title)</th><th class="pe-4 text-end">Action</th></tr>
+                </thead>
+                <tbody>
+                    {% for drive in drives %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-bold text-dark fs-5">{{ drive.job_title }}</td>
+                        <td class="pe-4 text-end">
+                            <a href="{{ url_for('student_drive', drive_id=drive.id) }}" class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View Details</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="2" class="text-center py-5 text-muted fw-semibold">No active placement drives posted by this company.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

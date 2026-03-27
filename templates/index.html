@@ -1,30 +1,50 @@
-{% extends 'base.html' %}
-
-{% block title %}Placement Portal{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="text-center mt-5">
-
-    <h1 class="mb-3">Placement Portal Application</h1>
-
-    <p class="lead">
-        A centralized platform for managing campus placements,
-        companies, and student applications.
-    </p>
-
-    <div class="mt-4">
-        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg me-2">
-            Login
-        </a>
-
-        <a href="{{ url_for('register_student') }}" class="btn btn-success btn-lg me-2">
-            Student Register
-        </a>
-
-        <a href="{{ url_for('register_company') }}" class="btn btn-warning btn-lg">
-            Company Register
-        </a>
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
+    <div class="container-fluid py-5 text-center">
+        <h1 class="display-5 fw-bold text-primary mb-4">Welcome to University Placement Portal</h1>
+        <p class="col-md-8 mx-auto fs-4 text-muted">
+            The ultimate bridge between talented students and top-tier companies. Streamline recruitment, track
+            applications, and secure the best opportunities seamlessly.
+        </p>
+        <div class="mt-4 gap-3">
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg shadow-sm px-4 py-1 me-2 mb-2">Login Now</a>
+            <div class="d-inline-block dropdown me-2 mb-2">
+                <button class="btn btn-outline-primary btn-lg shadow-sm px-4 py-1 dropdown-toggle" type="button"
+                    id="registerMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    Register
+                </button>
+                <ul class="dropdown-menu shadow-sm" aria-labelledby="registerMenuButton">
+                    <li><a class="dropdown-item py-2" href="{{ url_for('register_student') }}">As a Student</a></li>
+                    <li><a class="dropdown-item py-2" href="{{ url_for('register_company') }}">As a Company</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
+</div>
 
+<div class="row text-center mt-5 mb-5 g-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4">
+            <h3 class="text-secondary fw-semibold">For Students</h3>
+            <p class="text-muted">Discover dream jobs, track application status in real-time, and kickstart your career
+                effortlessly.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4">
+            <h3 class="text-secondary fw-semibold">For Companies</h3>
+            <p class="text-muted">Post upcoming placement drives, filter talented candidates, and manage shortlists with
+                ease.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4">
+            <h3 class="text-secondary fw-semibold">For Administration</h3>
+            <p class="text-muted">Oversee ongoing activities, approve crucial drives, and maintain quality interactions
+                smoothly.</p>
+        </div>
+    </div>
 </div>
 {% endblock %}

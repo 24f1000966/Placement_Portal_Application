@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-1 pb-2 border-bottom">
+    <h2 class="text-primary fw-bold mb-0">Student Applications</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary fw-semibold rounded-pill px-4">Back to Dashboard</a>
+</div>
+<h5 class="text-muted fw-semibold mb-4">{{ subtitle }}</h5>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr><th class="ps-4">Student Name</th><th>Company</th><th>Drive / Job Role</th><th>Date Applied</th><th>Status</th><th class="pe-4 text-end">Details</th></tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-bold text-dark">{{ app.student.name }}</td>
+                        <td class="fw-semibold">{{ app.drive.company.company_profile.company_name }}</td>
+                        <td>{{ app.drive.job_title }}</td>
+                        <td>{{ app.applied_date.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if app.status == 'Selected' %}bg-success
+                                {% elif app.status == 'Rejected' %}bg-danger
+                                {% elif app.status == 'Shortlisted' %}bg-info text-dark
+                                {% else %}bg-secondary{% endif %} rounded-pill px-3 py-2">
+                                {{ app.status }}
+                            </span>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <button class="btn btn-sm btn-outline-primary fw-semibold rounded-pill shadow-sm px-3" type="button" data-bs-toggle="collapse" data-bs-target="#appDetails{{ app.id }}">
+                                View Application Details
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="appDetails{{ app.id }}">
+                        <td colspan="6" class="bg-light p-4 rounded-4 my-2 border">
+                            <div class="row">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <h6 class="fw-bold text-primary border-bottom pb-2">Student Information</h6>
+                                    <strong>Roll No:</strong> <span class="text-secondary">{{ app.student.student_profile.roll_no }}</span><br>
+                                    <strong>Email:</strong> <span class="text-secondary">{{ app.student.email }}</span><br>
+                                    <strong>Contact Info:</strong> <span class="text-secondary">{{ app.student.student_profile.contact_info or 'N/A' }}</span><br>
+                                    {% if app.student.student_profile.resume_file %}
+                                    <a href="{{ url_for('uploaded_file', filename=app.student.student_profile.resume_file) }}" class="btn btn-sm btn-info text-white fw-bold shadow-sm mt-3 px-3 rounded-pill" target="_blank">Download Resume</a>
+                                    {% else %}
+                                    <div class="mt-2"><span class="badge bg-secondary rounded-pill">No resume uploaded</span></div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 border-start">
+                                    <h6 class="fw-bold text-info border-bottom pb-2">Placement Drive Details</h6>
+                                    <p class="text-muted small mb-2 h-auto" style="max-height: 80px; overflow-y: auto;">
+                                        {{ app.drive.description }}
+                                    </p>
+                                    <strong>Eligibility Criteria:</strong> <span class="text-secondary">{{ app.drive.eligibility }}</span><br>
+                                    <strong>Deadline:</strong> <span class="text-danger fw-semibold">{{ app.drive.deadline.strftime('%Y-%m-%d %H:%M') }}</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="text-center py-5 text-muted fw-semibold">No applications found in the system.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

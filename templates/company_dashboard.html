@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <h2 class="text-primary fw-bold mb-0">Welcome {{ current_user.company_profile.company_name }}</h2>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('create_drive') }}" class="btn btn-primary fw-semibold rounded-pill px-4 shadow-sm">+ Create
+            Drive</a>
+    </div>
+</div>
+
+{% if not approved %}
+<div class="alert alert-warning shadow-sm border-0 rounded-4 p-4 text-center">
+    <h4 class="mb-0"><strong class="me-2">Pending Approval:</strong> Your account is currently under review by the
+        administrator. Wait for approval before utilizing features.</h4>
+</div>
+{% else %}
+<div class="card shadow-sm border-0 mb-5 rounded-4">
+    <div class="card-header bg-white py-3 border-bottom rounded-top-4">
+        <h5 class="mb-0 text-primary fw-bold">Upcoming Drives</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4" width="10%">S.No</th>
+                        <th>Drive Name (Job Title)</th>
+                        <th>Status</th>
+                        <th class="pe-4 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in upcoming_drives %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-semibold text-secondary">{{ loop.index }}</td>
+                        <td class="fw-bold text-dark">{{ drive.job_title }}</td>
+                        <td>
+                            {% if drive.status == 'Approved' %}
+                            <span class="badge bg-success rounded-pill px-3 py-2">Approved</span>
+                            {% elif drive.status == 'Pending' %}
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Pending</span>
+                            {% elif drive.status == 'Ongoing' %}
+                            <span class="badge bg-info text-dark rounded-pill px-3 py-2">Ongoing</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4 text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ url_for('company_applications', drive_id=drive.id) }}"
+                                    class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View
+                                    Details</a>
+                                {% if drive.status == 'Approved' or drive.status == 'Ongoing' %}
+                                <form action="{{ url_for('mark_complete', drive_id=drive.id) }}" method="POST"
+                                    class="m-0" onsubmit="return confirm('Mark this drive as completed?');">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-success fw-semibold rounded-pill shadow-sm px-3">Mark as
+                                        Complete</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">No upcoming or pending drives found. Create
+                            your first drive!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="card shadow-sm border-0 mb-5 rounded-4">
+    <div class="card-header bg-light py-3 border-bottom rounded-top-4">
+        <h5 class="mb-0 text-secondary fw-bold">Closed Drives</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4" width="10%">S.No</th>
+                        <th>Drive Name (Job Title)</th>
+                        <th class="pe-4 text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in closed_drives %}
+                    <tr class="border-bottom text-muted">
+                        <td class="ps-4 fw-semibold">{{ loop.index }}</td>
+                        <td class="fw-semibold">{{ drive.job_title }}</td>
+                        <td class="pe-4 text-end">
+                            <a href="{{ url_for('edit_drive', drive_id=drive.id) }}"
+                                class="btn btn-sm btn-secondary fw-semibold rounded-pill shadow-sm px-4">Update</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center py-4 text-muted">No closed drives found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

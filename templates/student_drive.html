@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row pt-2 pb-5 mb-5 justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-primary text-white py-4 rounded-top-4 text-center">
+                <h3 class="mb-0 fw-bold">{{ drive.job_title }}</h3>
+                <p class="mb-0 opacity-75 mt-1 fs-5 fw-semibold">{{ drive.company.company_profile.company_name }}</p>
+            </div>
+
+            <div class="card-body p-5">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4"><i
+                        class="bi bi-briefcase me-2 text-primary"></i>Drive Details</h5>
+
+                <div class="mb-5">
+                    <strong class="text-secondary d-block mb-2 text-uppercase fw-bold opacity-75 fs-6">Job Description /
+                        Overview</strong>
+                    <div class="text-dark fs-5" style="line-height: 1.7; white-space: pre-wrap;">{{ drive.description }}
+                    </div>
+                </div>
+
+                <div class="row mb-5 g-4 border bg-light p-4 rounded-4 shadow-sm mx-0">
+                    <div class="col-md-6">
+                        <strong class="text-secondary d-block mb-1 text-uppercase fw-bold opacity-75">Salary /
+                            Package</strong>
+                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span
+                                class="badge bg-success bg-opacity-10 text-success me-2 px-3 py-2 rounded-pill fs-6"><i
+                                    class="bi bi-currency-dollar"></i> Not Disclosed</span></div>
+                    </div>
+                    <div class="col-md-6 border-start-md">
+                        <strong class="text-secondary d-block mb-1 text-uppercase fw-bold opacity-75">Location</strong>
+                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span
+                                class="badge bg-info bg-opacity-10 text-info me-2 px-3 py-2 rounded-pill fs-6"><i
+                                    class="bi bi-geo-alt-fill"></i> Multi-City / Remote</span></div>
+                    </div>
+                    <div class="col-12 border-top pt-3 mt-3">
+                        <strong class="text-secondary d-block mb-2 text-uppercase fw-bold opacity-75">Eligibility
+                            Criteria</strong>
+                        <div class="text-dark p-3 bg-white border rounded shadow-sm fw-semibold fs-5">{{
+                            drive.eligibility }}</div>
+                        <div class="mt-3 text-end"><span class="text-secondary fw-semibold">Closes on: </span><span
+                                class="text-danger fw-bold fs-6">{{ drive.deadline.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row gap-3 pt-3">
+                    {% if already_applied %}
+                    <button class="btn btn-secondary text-white btn-lg fw-bold rounded-pill shadow-sm px-5 w-100"
+                        disabled>Already Applied</button>
+                    {% else %}
+                    <form action="{{ url_for('student_apply', drive_id=drive.id) }}" method="POST" class="w-100 m-0">
+
+                        <button type="submit"
+                            class="btn btn-success btn-lg fw-bold rounded-pill shadow-sm px-5 w-100">Apply Now</button>
+                    </form>
+                    {% endif %}
+                    <a href="{{ url_for('student_company', company_id=drive.company.company_profile.id) }}"
+                        class="btn btn-secondary btn-lg fw-bold rounded-pill shadow-sm px-5 w-100 mt-2 mt-sm-0">Go
+                        Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

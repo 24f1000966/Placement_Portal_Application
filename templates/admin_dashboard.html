@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row align-items-center mb-4 pb-3 border-bottom">
+    <div class="col-md-6">
+        <h2 class="text-primary fw-bold mb-0">Welcome Admin</h2>
+    </div>
+    <div class="col-md-6">
+        <form class="d-flex" action="{{ url_for('admin_dashboard') }}" method="GET">
+            <input class="form-control me-2 rounded" type="search" name="search"
+                placeholder="Search students or companies by name/ID..." value="{{ search }}">
+            <button class="btn btn-outline-primary fw-semibold" type="submit">Search</button>
+            {% if search %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary ms-2 fw-semibold">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+
+{% if not search %}
+<div class="card shadow-sm border-0 mb-5 rounded-4">
+    <div class="card-header bg-warning py-3 rounded-top-4">
+        <h5 class="mb-0 text-dark fw-bold">Company Applications (Pending Approval)</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4">Company Name</th>
+                        <th>Representative</th>
+                        <th>Contact Info</th>
+                        <th>Website</th>
+                        <th class="pe-4 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in pending_companies %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-bold text-dark">{{ company.company_name }}</td>
+                        <td class="fw-semibold">{{ company.user.name }}</td>
+                        <td>{{ company.hr_contact or 'N/A' }}<br><small class="text-muted">{{ company.user.email
+                                }}</small></td>
+                        <td>{% if company.website %}<a href="{{ company.website }}" target="_blank">View Site</a>{% else
+                            %}N/A{% endif %}</td>
+                        <td class="pe-4 text-end">
+                            <form action="{{ url_for('admin_approve_company', id=company.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="status" value="Approved">
+                                <button type="submit"
+                                    class="btn btn-sm btn-success shadow-sm fw-semibold rounded-pill px-3">Approve</button>
+                            </form>
+                            <form action="{{ url_for('admin_approve_company', id=company.id) }}" method="POST"
+                                class="d-inline">
+                                <input type="hidden" name="status" value="Rejected">
+                                <button type="submit"
+                                    class="btn btn-sm btn-danger shadow-sm fw-semibold rounded-pill px-3">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No pending company applications.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="card shadow-sm border-0 mb-5 rounded-4">
+    <div class="card-header bg-white py-3 border-bottom rounded-top-4">
+        <h5 class="mb-0 text-primary fw-bold">Registered Companies</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4">Company Name</th>
+                        <th>Representative</th>
+                        <th>Approval Status</th>
+                        <th class="pe-4 text-end">System Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in companies %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-bold text-dark">
+                            {{ company.company_name }}
+                            {% if not company.user.is_active %}<span
+                                class="badge bg-danger ms-2 rounded-pill">Blacklisted</span>{% endif %}
+                        </td>
+                        <td class="fw-semibold">{{ company.user.name }}</td>
+                        <td>
+                            <span
+                                class="badge {% if company.approval_status == 'Approved' %}bg-success{% else %}bg-secondary{% endif %} rounded-pill px-3 py-2">
+                                {{ company.approval_status }}
+                            </span>
+                        </td>
+                        <td class="pe-4 text-end">
+                            <form action="{{ url_for('admin_blacklist_company', id=company.id) }}" method="POST">
+                                {% if company.user.is_active %}
+                                <button type="submit"
+                                    class="btn btn-sm btn-outline-danger fw-semibold rounded-pill px-4"
+                                    title="Disable Company Access">Blacklist</button>
+                                {% else %}
+                                <button type="submit"
+                                    class="btn btn-sm btn-outline-success fw-semibold rounded-pill px-4"
+                                    title="Enable Company Access">Activate</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No registered companies match your search.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-5 rounded-4">
+    <div class="card-header bg-white py-3 border-bottom rounded-top-4">
+        <h5 class="mb-0 text-success fw-bold">Registered Students</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4">Roll No / ID</th>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th class="pe-4 text-end">System Access</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-bold text-secondary">{{ student.roll_no }}</td>
+                        <td class="fw-bold text-dark">
+                            {{ student.user.name }}
+                            {% if not student.user.is_active %}<span
+                                class="badge bg-danger ms-2 rounded-pill">Blacklisted</span>{% endif %}
+                        </td>
+                        <td class="text-muted">{{ student.user.email }}</td>
+                        <td class="pe-4 text-end">
+                            <form action="{{ url_for('admin_blacklist_student', id=student.id) }}" method="POST">
+                                {% if student.user.is_active %}
+                                <button type="submit"
+                                    class="btn btn-sm btn-outline-danger fw-semibold rounded-pill px-4"
+                                    title="Prevent from Logging in">Blacklist</button>
+                                {% else %}
+                                <button type="submit"
+                                    class="btn btn-sm btn-outline-success fw-semibold rounded-pill px-4"
+                                    title="Allow login">Activate</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No registered students match your search.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+{% if not search %}
+<div class="card shadow-sm border-0 mb-5 rounded-4">
+    <div class="card-header bg-white py-3 border-bottom rounded-top-4">
+        <h5 class="mb-0 text-info fw-bold">Ongoing & Pending Placement Drives</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-borderless align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="ps-4">Drive ID</th>
+                        <th>Company Name</th>
+                        <th>Job Title</th>
+                        <th>Publish Status</th>
+                        <th class="pe-4 text-end">Drive Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in drives %}
+                    <tr class="border-bottom">
+                        <td class="ps-4 fw-bold text-secondary">#{{ drive.id }}</td>
+                        <td class="fw-bold text-dark">{{ drive.company.company_profile.company_name }}</td>
+                        <td class="fw-semibold">{{ drive.job_title }}</td>
+                        <td>
+                            {% if drive.status == 'Approved' %}<span
+                                class="badge bg-success rounded-pill px-3 py-2">Approved</span>
+                            {% elif drive.status == 'Pending' %}<span
+                                class="badge bg-warning text-dark rounded-pill px-3 py-2">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4 text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                {% if drive.status == 'Pending' %}
+                                <form action="{{ url_for('admin_approve_drive', id=drive.id) }}" method="POST">
+                                    <input type="hidden" name="status" value="Approved">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-success fw-semibold shadow-sm">Approve</button>
+                                </form>
+                                <form action="{{ url_for('admin_approve_drive', id=drive.id) }}" method="POST">
+                                    <input type="hidden" name="status" value="Rejected">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-danger fw-semibold shadow-sm">Reject</button>
+                                </form>
+                                {% elif drive.status == 'Approved' %}
+                                <form action="{{ url_for('admin_complete_drive', id=drive.id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to mark this drive as completed (Close it)?');">
+                                    <button type="submit" class="btn btn-sm btn-primary fw-semibold shadow-sm">Mark as
+                                        Completed</button>
+                                </form>
+                                {% endif %}
+                                <a href="{{ url_for('admin_view_applications', drive_id=drive.id) }}"
+                                    class="btn btn-sm btn-outline-info fw-semibold">View Details</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No active or pending placement drives.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
