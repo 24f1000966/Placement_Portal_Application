@@ -3,17 +3,18 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
     <h2 class="text-primary fw-bold mb-0">Review Application</h2>
-    <a href="{{ url_for('company_applications', drive_id=application.drive_id) }}" class="btn btn-outline-secondary fw-semibold rounded-pill px-4 shadow-sm">Back to List</a>
+    <a href="{{ url_for('company_applications', drive_id=application.drive_id) }}"
+        class="btn btn-outline-secondary fw-semibold rounded-pill px-4 shadow-sm">Back to List</a>
 </div>
 
 <div class="row justify-content-center mb-5">
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-5">
-                
+
                 <div class="row mb-5">
                     <!-- Student Details -->
-                    <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="col-12 mb-4 mb-md-0">
                         <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Student Details</h5>
                         <div class="d-flex mb-2">
                             <span class="text-secondary fw-semibold w-25">Name:</span>
@@ -24,37 +25,52 @@
                             <span class="text-dark">{{ application.student.student_profile.roll_no }}</span>
                         </div>
                         <div class="d-flex mb-2">
+                            <span class="text-secondary fw-semibold w-25">Institution:</span>
+                            <span class="text-dark">{{ application.student.student_profile.institution_name or 'N/A' }}</span>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <span class="text-secondary fw-semibold w-25">Education:</span>
+                            <span class="text-dark">{{ application.student.student_profile.education or 'N/A' }}</span>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <span class="text-secondary fw-semibold w-25">CGPA:</span>
+                            <span class="text-dark">{{ application.student.student_profile.cgpa or 'N/A' }}</span>
+                        </div>
+                        <div class="d-flex mb-2">
                             <span class="text-secondary fw-semibold w-25">Email:</span>
                             <span class="text-dark">{{ application.student.email }}</span>
                         </div>
-                        <div class="d-flex mb-4">
+                        <div class="d-flex mb-2">
                             <span class="text-secondary fw-semibold w-25">Contact:</span>
                             <span class="text-dark">{{ application.student.student_profile.contact_info or 'N/A' }}</span>
                         </div>
-                        
+                        <div class="d-flex mb-2">
+                            <span class="text-secondary fw-semibold w-25">LinkedIn:</span>
+                            <span class="text-dark">
+                                {% if application.student.student_profile.linkedin_id %}
+                                    <a href="{{ application.student.student_profile.linkedin_id }}" target="_blank">{{ application.student.student_profile.linkedin_id }}</a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="d-flex mb-2">
+                            <span class="text-secondary fw-semibold w-25">Skills:</span>
+                            <span class="text-dark">{{ application.student.student_profile.skills or 'N/A' }}</span>
+                        </div>
+                        <div class="d-flex mb-4">
+                            <span class="text-secondary fw-semibold w-25">Hobbies:</span>
+                            <span class="text-dark">{{ application.student.student_profile.hobbies or 'N/A' }}</span>
+                        </div>
+
                         <div>
                             {% if application.student.student_profile.resume_file %}
-                            <a href="{{ url_for('uploaded_file', filename=application.student.student_profile.resume_file) }}" class="btn btn-info text-white fw-bold shadow-sm rounded-pill px-4" target="_blank">View Resume</a>
+                            <a href="{{ url_for('uploaded_file', filename=application.student.student_profile.resume_file) }}"
+                                class="btn btn-info text-white fw-bold shadow-sm rounded-pill px-4" target="_blank">View
+                                Resume</a>
                             {% else %}
                             <span class="badge bg-secondary rounded-pill px-3 py-2">No Resume Uploaded</span>
                             {% endif %}
-                        </div>
-                    </div>
-                    
-                    <!-- Drive Details -->
-                    <div class="col-md-6 border-start ps-md-4">
-                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Placement Drive Info</h5>
-                        <div class="d-flex mb-2">
-                            <span class="text-secondary fw-semibold w-25">Company:</span>
-                            <span class="text-dark fw-bold">{{ application.drive.company.company_profile.company_name }}</span>
-                        </div>
-                        <div class="d-flex mb-2">
-                            <span class="text-secondary fw-semibold w-25">Role:</span>
-                            <span class="text-primary fw-bold">{{ application.drive.job_title }}</span>
-                        </div>
-                        <div class="d-flex mb-2">
-                            <span class="text-secondary fw-semibold w-25">Date:</span>
-                            <span class="text-dark">{{ application.applied_date.strftime('%Y-%m-%d %H:%M') }}</span>
                         </div>
                     </div>
                 </div>
@@ -62,22 +78,28 @@
                 <!-- Update Status Form -->
                 <div class="bg-light p-4 rounded-4 border">
                     <h5 class="fw-bold text-primary mb-3">Applicant Status</h5>
-                    <form action="{{ url_for('review_application', application_id=application.id) }}" method="POST" class="d-flex flex-column gap-3">
+                    <form action="{{ url_for('review_application', application_id=application.id) }}" method="POST"
+                        class="d-flex flex-column gap-3">
                         <div class="form-group w-50">
                             <label class="form-label fw-semibold text-secondary">Decision Selection</label>
                             <select name="status" class="form-select form-select-lg shadow-sm" required>
-                                <option value="Applied" {% if application.status == 'Applied' %}selected{% endif %}>Applied (Pending Review)</option>
-                                <option value="Shortlisted" {% if application.status == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
-                                <option value="Selected" {% if application.status == 'Selected' %}selected{% endif %}>Selected</option>
-                                <option value="Rejected" {% if application.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                <option value="Applied" {% if application.status=='Applied' %}selected{% endif %}>
+                                    Applied (Pending Review)</option>
+                                <option value="Shortlisted" {% if application.status=='Shortlisted' %}selected{% endif
+                                    %}>Shortlisted</option>
+                                <option value="Selected" {% if application.status=='Selected' %}selected{% endif %}>
+                                    Selected</option>
+                                <option value="Rejected" {% if application.status=='Rejected' %}selected{% endif %}>
+                                    Rejected</option>
                             </select>
                         </div>
                         <div class="mt-2">
-                            <button type="submit" class="btn btn-success btn-lg fw-bold rounded-pill shadow-sm px-5">Save Status</button>
+                            <button type="submit"
+                                class="btn btn-success btn-lg fw-bold rounded-pill shadow-sm px-5">Save Status</button>
                         </div>
                     </form>
                 </div>
-                
+
             </div>
         </div>
     </div>

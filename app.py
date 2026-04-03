@@ -1,9 +1,70 @@
 import os
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, send_from_directory, g, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.local import LocalProxy
 from werkzeug.security import generate_password_hash, check_password_hash
+
+class UserMixin:
+    is_authenticated = True
+
+class DummyAnonymousUser:
+    is_authenticated = False
+    is_active = False
+    role = None
+
+def get_current_user():
+    if hasattr(g, 'user'): return g.user
+    path = request.path
+    role = None
+    if path.startswith('/admin'): role = 'admin'
+    elif path.startswith('/company'): role = 'company'
+    elif path.startswith('/student'): role = 'student'
+    if not role: role = session.get('active_role')
+    
+    user_id = session.get(f'{role}_id') if role else None
+    if user_id:
+        user = User.query.get(user_id)
+        if user:
+            g.user = user
+            return user
+    return DummyAnonymousUser()
+
+current_user = LocalProxy(get_current_user)
+
+def login_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('Please log in to continue.', 'warning')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def login_user(user):
+    session[f'{user.role}_id'] = user.id
+    session['active_role'] = user.role
+
+def logout_user():
+    path = request.referrer or request.path
+    role_to_pop = None
+    
+    if '/admin' in path: role_to_pop = 'admin'
+    elif '/company' in path: role_to_pop = 'company'
+    elif '/student' in path: role_to_pop = 'student'
+    else: role_to_pop = session.get('active_role')
+    
+    if role_to_pop and f'{role_to_pop}_id' in session:
+        session.pop(f'{role_to_pop}_id', None)
+        
+    # Reassign active_role to any surviving session
+    for r in ['admin', 'student', 'company']:
+        if f'{r}_id' in session:
+            session['active_role'] = r
+            return
+            
+    session.pop('active_role', None)
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -17,9 +78,10 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 db = SQLAlchemy(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
+
+@app.context_processor
+def inject_user():
+    return dict(current_user=current_user)
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,21 +96,35 @@ class CompanyProfile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     company_name = db.Column(db.String(100), nullable=False)
     hr_contact = db.Column(db.String(100))
+    contact_email = db.Column(db.String(120))
+    contact_number = db.Column(db.String(50))
+    hr_contact_number = db.Column(db.String(50))
+    linkedin_id = db.Column(db.String(100))
     website = db.Column(db.String(200))
+    about = db.Column(db.Text)
     approval_status = db.Column(db.String(20), default='Pending') 
     user = db.relationship('User', backref=db.backref('company_profile', uselist=False, cascade='all, delete-orphan'))
 
 class StudentProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    # linkedin=db.Column(db.Integer , )
     roll_no = db.Column(db.String(50), nullable=False, unique=True)
     contact_info = db.Column(db.String(100))
+    linkedin_id = db.Column(db.String(100))
+    skills = db.Column(db.Text)
+    hobbies = db.Column(db.String(200))
+    cgpa = db.Column(db.Float)
+    institution_name = db.Column(db.String(200))
+    education = db.Column(db.String(100))
     resume_file = db.Column(db.String(200)) # stores filename
     user = db.relationship('User', backref=db.backref('student_profile', uselist=False, cascade='all, delete-orphan'))
 
 class PlacementDrive(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    salary = db.Column(db.Integer, default="Not to Disclose")
+    location = db.Column(db.String(100),default="Remote")
+    job_type = db.Column(db.String(50),default="Full-time")
+    experience = db.Column(db.String(50),default="Fresher")
     company_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     job_title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -68,17 +144,19 @@ class Application(db.Model):
 
     __table_args__ = (db.UniqueConstraint('student_user_id', 'drive_id', name='uq_student_drive'),)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
 # Decorators
 def admin_required(f):
     from functools import wraps
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'admin':
-            abort(403)
+        if not current_user.is_authenticated:
+            flash('Please log in to continue.', 'warning')
+            return redirect(url_for('login'))
+        if current_user.role != 'admin':
+            flash(f'Access Denied. You are currently logged in as a {current_user.role}.', 'danger')
+            if current_user.role == 'company': return redirect(url_for('company_dashboard'))
+            elif current_user.role == 'student': return redirect(url_for('student_dashboard'))
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -86,8 +164,14 @@ def company_required(f):
     from functools import wraps
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'company':
-            abort(403)
+        if not current_user.is_authenticated:
+            flash('Please log in to continue.', 'warning')
+            return redirect(url_for('login'))
+        if current_user.role != 'company':
+            flash(f'Access Denied. You are currently logged in as a {current_user.role}.', 'danger')
+            if current_user.role == 'admin': return redirect(url_for('admin_dashboard'))
+            elif current_user.role == 'student': return redirect(url_for('student_dashboard'))
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -95,23 +179,23 @@ def student_required(f):
     from functools import wraps
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.role != 'student':
-            abort(403)
-        return f(*args, **kwargs)
-    return decorated_function
-
-def check_active(f):
-    from functools import wraps
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if current_user.is_authenticated and not current_user.is_active:
-            logout_user()
-            flash('Your account has been blacklisted or deactivated.', 'danger')
+        if not current_user.is_authenticated:
+            flash('Please log in to continue.', 'warning')
             return redirect(url_for('login'))
+        if current_user.role != 'student':
+            flash(f'Access Denied. You are currently logged in as a {current_user.role}.', 'danger')
+            if current_user.role == 'admin': return redirect(url_for('admin_dashboard'))
+            elif current_user.role == 'company': return redirect(url_for('company_dashboard'))
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
 
-app.before_request_funcs = [(None, check_active)]
+@app.before_request
+def check_active():
+    if current_user.is_authenticated and not current_user.is_active:
+        logout_user()
+        flash('Your account has been blacklisted or deactivated.', 'danger')
+        return redirect(url_for('login'))
 
 # routing starts frm here
 @app.route('/')
@@ -120,11 +204,6 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        if current_user.role == 'admin': return redirect(url_for('admin_dashboard'))
-        elif current_user.role == 'company': return redirect(url_for('company_dashboard'))
-        elif current_user.role == 'student': return redirect(url_for('student_dashboard'))
-
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -226,12 +305,21 @@ def admin_dashboard():
         
     drives = PlacementDrive.query.filter(PlacementDrive.status.in_(['Approved', 'Pending'])).all()
     
+    total_students = StudentProfile.query.count()
+    total_companies = CompanyProfile.query.count()
+    total_drives = PlacementDrive.query.count()
+    total_applications = Application.query.count()
+    
     return render_template('admin_dashboard.html', 
                            students=students, 
                            companies=companies, 
                            pending_companies=pending_companies,
                            drives=drives,
-                           search=search)
+                           search=search,
+                           total_students=total_students,
+                           total_companies=total_companies,
+                           total_drives=total_drives,
+                           total_applications=total_applications)
 
 @app.route('/admin/approve-company/<int:id>', methods=['POST'])
 @login_required
@@ -297,11 +385,19 @@ def admin_complete_drive(id):
     flash(f'Drive {drive.job_title} marked as completed.', 'success')
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/company/<int:company_id>/view')
+@login_required
+@admin_required
+def admin_company_profile(company_id):
+    company = CompanyProfile.query.get_or_404(company_id)
+    return render_template('admin_view_company.html', company=company)
+
 @app.route('/admin/view-applications')
 @login_required
 @admin_required
 def admin_view_applications():
     drive_id = request.args.get('drive_id')
+    drive = None
     if drive_id:
         applications = Application.query.filter_by(drive_id=drive_id).all()
         drive = PlacementDrive.query.get(drive_id)
@@ -310,7 +406,8 @@ def admin_view_applications():
         applications = Application.query.all()
         subtitle = "All Applications"
         
-    return render_template('admin_applications.html', applications=applications, subtitle=subtitle)
+    return render_template('admin_applications.html', applications=applications, subtitle=subtitle, drive=drive)
+
 
 
 @app.route('/company/dashboard')
@@ -335,11 +432,32 @@ def company_dashboard():
                            upcoming_drives=upcoming_drives, 
                            closed_drives=closed_drives)
 
+@app.route('/company/profile', methods=['GET', 'POST'])
+@login_required
+@company_required
+def company_profile():
+    if request.method == 'POST':
+        current_user.company_profile.company_name = request.form.get('company_name')
+        current_user.name = request.form.get('hr_name')
+        current_user.company_profile.hr_contact = request.form.get('hr_name')
+        current_user.company_profile.contact_email = request.form.get('contact_email')
+        current_user.company_profile.contact_number = request.form.get('contact_number')
+        current_user.company_profile.hr_contact_number = request.form.get('hr_contact_number')
+        current_user.company_profile.website = request.form.get('website')
+        current_user.company_profile.linkedin_id = request.form.get('linkedin_id')
+        current_user.company_profile.about = request.form.get('about')
+        db.session.commit()
+        flash('Company profile updated successfully!', 'success')
+        return redirect(url_for('company_profile'))
+    return render_template('company_profile.html')
+
 @app.route('/company/create-drive', methods=['GET', 'POST'])
 @login_required
 @company_required
 def create_drive():
-    if current_user.company_profile.approval_status != 'Approved': abort(403)
+    if current_user.company_profile.approval_status != 'Approved':
+        flash('Your company is not approved.', 'warning')
+        return redirect(url_for('company_dashboard'))
         
     if request.method == 'POST':
         job_title = request.form.get('job_title')
@@ -351,6 +469,10 @@ def create_drive():
         new_drive = PlacementDrive(
             company_user_id=current_user.id,
             job_title=job_title,
+            job_type=request.form.get('job_type', 'Full-time'),
+            experience=request.form.get('experience', 'Fresher'),
+            location=request.form.get('location', 'Remote'),
+            salary=request.form.get('salary', ''),
             description=description,
             eligibility=eligibility,
             deadline=deadline
@@ -366,14 +488,25 @@ def create_drive():
 @login_required
 @company_required
 def edit_drive(drive_id):
-    if current_user.company_profile.approval_status != 'Approved': abort(403)
+    if current_user.company_profile.approval_status != 'Approved':
+        flash('Your company is not approved.', 'warning')
+        return redirect(url_for('company_dashboard'))
     drive = PlacementDrive.query.get_or_404(drive_id)
-    if drive.company_user_id != current_user.id: abort(403)
+    if drive.company_user_id != current_user.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('company_dashboard'))
 
     if request.method == 'POST':
         drive.job_title = request.form.get('job_title')
+        drive.job_type = request.form.get('job_type', 'Full-time')
+        drive.experience = request.form.get('experience', 'Fresher')
+        drive.location = request.form.get('location', 'Remote')
+        drive.salary = request.form.get('salary', '')
         drive.description = request.form.get('description')
         drive.eligibility = request.form.get('eligibility')
+        deadline_str = request.form.get('deadline')
+        if deadline_str:
+            drive.deadline = datetime.strptime(deadline_str, '%Y-%m-%dT%H:%M')
         db.session.commit()
         flash('Drive updated successfully.', 'success')
         return redirect(url_for('company_dashboard'))
@@ -383,22 +516,47 @@ def edit_drive(drive_id):
 @login_required
 @company_required
 def mark_complete(drive_id):
-    if current_user.company_profile.approval_status != 'Approved': abort(403)
+    if current_user.company_profile.approval_status != 'Approved':
+        flash('Your company is not approved.', 'warning')
+        return redirect(url_for('company_dashboard'))
     drive = PlacementDrive.query.get_or_404(drive_id)
-    if drive.company_user_id != current_user.id: abort(403)
+    if drive.company_user_id != current_user.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('company_dashboard'))
     
     drive.status = 'Closed'
     db.session.commit()
     flash('Drive marked as completed.', 'success')
     return redirect(url_for('company_dashboard'))
 
+@app.route('/company/delete-drive/<int:drive_id>', methods=['POST'])
+@login_required
+@company_required
+def delete_drive(drive_id):
+    if current_user.company_profile.approval_status != 'Approved':
+        flash('Your company is not approved.', 'warning')
+        return redirect(url_for('company_dashboard'))
+    drive = PlacementDrive.query.get_or_404(drive_id)
+    if drive.company_user_id != current_user.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('company_dashboard'))
+    
+    db.session.delete(drive)
+    db.session.commit()
+    flash('Drive deleted successfully.', 'success')
+    return redirect(url_for('company_dashboard'))
+
 @app.route('/company/drive/<int:drive_id>/applications')
 @login_required
 @company_required
 def company_applications(drive_id):
-    if current_user.company_profile.approval_status != 'Approved': abort(403)
+    if current_user.company_profile.approval_status != 'Approved':
+        flash('Your company is not approved.', 'warning')
+        return redirect(url_for('company_dashboard'))
     drive = PlacementDrive.query.get_or_404(drive_id)
-    if drive.company_user_id != current_user.id: abort(403)
+    if drive.company_user_id != current_user.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('company_dashboard'))
         
     applications = Application.query.filter_by(drive_id=drive_id).all()
     return render_template('company_applications.html', drive=drive, applications=applications)
@@ -407,9 +565,13 @@ def company_applications(drive_id):
 @login_required
 @company_required
 def review_application(application_id):
-    if current_user.company_profile.approval_status != 'Approved': abort(403)
+    if current_user.company_profile.approval_status != 'Approved':
+        flash('Your company is not approved.', 'warning')
+        return redirect(url_for('company_dashboard'))
     application = Application.query.get_or_404(application_id)
-    if application.drive.company_user_id != current_user.id: abort(403)
+    if application.drive.company_user_id != current_user.id:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('company_dashboard'))
         
     if request.method == 'POST':
         status = request.form.get('status')
@@ -423,13 +585,39 @@ def review_application(application_id):
 
 
 
+@app.route('/student/<int:student_id>/view')
+@login_required
+def view_student_profile(student_id):
+    if current_user.role not in ['admin', 'company']:
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('login'))
+        
+    student = User.query.get_or_404(student_id)
+    if student.role != 'student':
+        abort(404)
+        
+    return render_template('view_student_profile.html', student=student)
+
 @app.route('/student/dashboard')
 @login_required
 @student_required
 def student_dashboard():
     approved_companies = CompanyProfile.query.filter_by(approval_status='Approved').all()
     applications = Application.query.filter_by(student_user_id=current_user.id).all()
-    return render_template('student_dashboard.html', companies=approved_companies, applications=applications)
+    approved_drives = PlacementDrive.query.filter_by(status='Approved').all()
+    
+    status_alerts = []
+    for app in applications:
+        if app.status in ['Selected', 'Shortlisted']:
+            status_alerts.append({'type': 'success', 'message': f"Congratulations! You've been {app.status} for {app.drive.job_title} at {app.drive.company.company_profile.company_name}."})
+        elif app.status == 'Rejected':
+            status_alerts.append({'type': 'danger', 'message': f"Update: Your application for {app.drive.job_title} at {app.drive.company.company_profile.company_name} was {app.status}."})
+
+    return render_template('student_dashboard.html', 
+                           companies=approved_companies, 
+                           approved_drives=approved_drives,
+                           applications=applications,
+                           status_alerts=status_alerts)
 
 @app.route('/student/profile', methods=['GET', 'POST'])
 @login_required
@@ -438,6 +626,17 @@ def student_profile():
     if request.method == 'POST':
         current_user.name = request.form.get('name')
         current_user.student_profile.contact_info = request.form.get('contact_info')
+        current_user.student_profile.linkedin_id = request.form.get('linkedin_id')
+        current_user.student_profile.skills = request.form.get('skills')
+        current_user.student_profile.institution_name = request.form.get('institution_name')
+        current_user.student_profile.hobbies = request.form.get('hobbies')
+        current_user.student_profile.education = request.form.get('education')
+        cgpa_val = request.form.get('cgpa')
+        if cgpa_val:
+            try:
+                current_user.student_profile.cgpa = float(cgpa_val)
+            except ValueError:
+                pass
         
         file = request.files.get('resume')
         if file and file.filename != '':
@@ -516,5 +715,4 @@ def init_db():
 if __name__ == '__main__':
     if not os.path.exists('placement.db'):
         init_db()
-    app.run(debug=True, port=5000)
-
+    app.run(debug=True, port=5002)

@@ -19,12 +19,20 @@
                 
                 <div class="row mb-5 g-4 border bg-light p-4 rounded-4 shadow-sm mx-0">
                     <div class="col-md-6">
-                        <strong class="text-secondary d-block mb-1 text-uppercase fw-bold opacity-75">Salary / Package</strong>
-                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span class="badge bg-success bg-opacity-10 text-success me-2 px-3 py-2 rounded-pill fs-6"><i class="bi bi-currency-dollar"></i> Not Disclosed</span></div>
+                        <strong class="text-secondary d-block mb-1 text-uppercase fw-bold opacity-75">Job Type</strong>
+                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span class="badge bg-primary bg-opacity-10 text-primary me-2 px-3 py-2 rounded-pill fs-6"><i class="bi bi-briefcase-fill"></i> {{ drive.job_type or 'Full-time' }}</span></div>
                     </div>
                     <div class="col-md-6 border-start-md">
+                        <strong class="text-secondary d-block mb-1 text-uppercase fw-bold opacity-75">Experience</strong>
+                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span class="badge bg-secondary bg-opacity-10 text-secondary me-2 px-3 py-2 rounded-pill fs-6"><i class="bi bi-person-badge"></i> {{ drive.experience or 'Fresher' }}</span></div>
+                    </div>
+                    <div class="col-md-6 pt-2">
+                        <strong class="text-secondary d-block mb-1 text-uppercase fw-bold opacity-75">Salary / Package</strong>
+                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span class="badge bg-success bg-opacity-10 text-success me-2 px-3 py-2 rounded-pill fs-6"><i class="bi bi-currency-dollar"></i> {{ drive.salary or 'Not Disclosed' }}</span></div>
+                    </div>
+                    <div class="col-md-6 border-start-md pt-2">
                         <strong class="text-secondary d-block mb-1 text-uppercase fw-bold opacity-75">Location</strong>
-                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span class="badge bg-info bg-opacity-10 text-info me-2 px-3 py-2 rounded-pill fs-6"><i class="bi bi-geo-alt-fill"></i> Multi-City / Remote</span></div>
+                        <div class="text-dark fw-bold fs-5 d-flex align-items-center"><span class="badge bg-info bg-opacity-10 text-info me-2 px-3 py-2 rounded-pill fs-6"><i class="bi bi-geo-alt-fill"></i> {{ drive.location or 'Remote' }}</span></div>
                     </div>
                     <div class="col-12 border-top pt-3 mt-3">
                         <strong class="text-secondary d-block mb-2 text-uppercase fw-bold opacity-75">Eligibility Criteria</strong>

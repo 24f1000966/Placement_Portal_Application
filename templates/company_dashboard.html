@@ -24,20 +24,60 @@
 </div>
 {% endif %}
 
+<!-- Company Details -->
+<div class="card shadow-sm border-0 mb-5 rounded-4">
+    <div class="card-header bg-white py-3 border-bottom rounded-top-4">
+        <h5 class="mb-0 text-primary fw-bold">Company Profile</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3 text-start">
+                <p class="mb-1 text-muted small text-uppercase fw-bold">Company Name</p>
+                <p class="mb-0 fw-semibold fs-5">{{ current_user.company_profile.company_name }}</p>
+            </div>
+            <div class="col-md-6 mb-3 text-start">
+                <p class="mb-1 text-muted small text-uppercase fw-bold">HR Contact</p>
+                <p class="mb-0 fw-semibold fs-5">{{ current_user.company_profile.hr_contact or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6 mb-3 mb-md-0 text-start">
+                <p class="mb-1 text-muted small text-uppercase fw-bold">Registered Email</p>
+                <p class="mb-0 fw-semibold fs-5">{{ current_user.email }}</p>
+            </div>
+            <div class="col-md-6 mb-3 text-start">
+                <p class="mb-1 text-muted small text-uppercase fw-bold">Website</p>
+                <p class="mb-0 fw-semibold fs-5">
+                    {% if current_user.company_profile.website %}
+                    <a href="{{ current_user.company_profile.website }}" class="text-decoration-none" target="_blank">{{
+                        current_user.company_profile.website }}</a>
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-12 text-start">
+                <p class="mb-1 text-muted small text-uppercase fw-bold">About Our Company</p>
+                <p class="mb-0 fw-semibold fs-6 text-secondary">{{ current_user.company_profile.about or 'No description provided.' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <!-- Upcoming Drives Section -->
 <div class="card shadow-sm border-0 mb-5 rounded-4">
     <div class="card-header bg-white py-3 border-bottom rounded-top-4">
-        <h5 class="mb-0 text-primary fw-bold">Upcoming Drives</h5>
+        <h5 class="mb-0 text-primary fw-bold">Upcoming & Ongoing Drives</h5>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover table-borderless align-middle mb-0">
                 <thead class="table-light text-muted">
                     <tr>
-                        <th class="ps-4" width="10%">S.No</th>
-                        <th>Drive Name (Job Title)</th>
+                        <th class="ps-4" width="8%">S.No</th>
+                        <th width="10%">Job ID</th>
+                        <th>Job Title</th>
+                        <th>Applicants</th>
                         <th>Status</th>
                         <th class="pe-4 text-end">Actions</th>
                     </tr>
@@ -46,7 +86,11 @@
                     {% for drive in upcoming_drives %}
                     <tr class="border-bottom">
                         <td class="ps-4 fw-semibold text-secondary">{{ loop.index }}</td>
+                        <td class="fw-semibold text-muted">#{{ drive.id }}</td>
                         <td class="fw-bold text-dark">{{ drive.job_title }}</td>
+                        <td>
+                            <span class="badge bg-secondary rounded-pill px-3 py-2">{{ drive.applications|length }}</span>
+                        </td>
                         <td>
                             {% if drive.status == 'Approved' %}
                             <span class="badge bg-success rounded-pill px-3 py-2">Approved</span>
@@ -61,6 +105,8 @@
                                 <a href="{{ url_for('company_applications', drive_id=drive.id) }}"
                                     class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View
                                     Details</a>
+                                <a href="{{ url_for('edit_drive', drive_id=drive.id) }}"
+                                    class="btn btn-sm btn-warning text-dark fw-semibold rounded-pill shadow-sm px-4">Edit</a>
                                 {% if drive.status == 'Approved' or drive.status == 'Ongoing' %}
                                 <form action="{{ url_for('mark_complete', drive_id=drive.id) }}" method="POST"
                                     class="m-0" onsubmit="return confirm('Mark this drive as completed?');">
@@ -69,12 +115,18 @@
                                         Complete</button>
                                 </form>
                                 {% endif %}
+                                <form action="{{ url_for('delete_drive', drive_id=drive.id) }}" method="POST"
+                                    class="m-0"
+                                    onsubmit="return confirm('Are you sure you want to delete this drive? This action cannot be undone.');">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-danger fw-semibold rounded-pill shadow-sm px-3">Delete</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" class="text-center py-5 text-muted">No upcoming or pending drives found. Create
+                        <td colspan="5" class="text-center py-5 text-muted">No upcoming or pending drives found. Create
                             your first drive!</td>
                     </tr>
                     {% endfor %}
@@ -94,8 +146,10 @@
             <table class="table table-hover table-borderless align-middle mb-0">
                 <thead class="table-light text-muted">
                     <tr>
-                        <th class="ps-4" width="10%">S.No</th>
-                        <th>Drive Name (Job Title)</th>
+                        <th class="ps-4" width="8%">Sl No</th>
+                        <th width="10%">Job No</th>
+                        <th>Drive Name</th>
+                        <th>Applicants</th>
                         <th class="pe-4 text-end">Action</th>
                     </tr>
                 </thead>
@@ -103,15 +157,27 @@
                     {% for drive in closed_drives %}
                     <tr class="border-bottom text-muted">
                         <td class="ps-4 fw-semibold">{{ loop.index }}</td>
+                        <td class="fw-semibold text-muted">#{{ drive.id }}</td>
                         <td class="fw-semibold">{{ drive.job_title }}</td>
+                        <td>
+                            <span class="badge bg-secondary rounded-pill px-3 py-2">{{ drive.applications|length }}</span>
+                        </td>
                         <td class="pe-4 text-end">
-                            <a href="{{ url_for('edit_drive', drive_id=drive.id) }}"
-                                class="btn btn-sm btn-secondary fw-semibold rounded-pill shadow-sm px-4">Update</a>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ url_for('company_applications', drive_id=drive.id) }}"
+                                    class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View Details</a>
+                                <form action="{{ url_for('delete_drive', drive_id=drive.id) }}" method="POST"
+                                    class="m-0"
+                                    onsubmit="return confirm('Are you sure you want to delete this drive? This action cannot be undone.');">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-danger fw-semibold rounded-pill shadow-sm px-3">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="3" class="text-center py-4 text-muted">No closed drives found.</td>
+                        <td colspan="4" class="text-center py-4 text-muted">No closed drives found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -8,29 +8,68 @@
                 <form method="POST" action="{{ url_for('student_profile') }}" enctype="multipart/form-data">
                     <div class="mb-4">
                         <label class="form-label text-secondary fw-semibold">Full Legal Name</label>
-                        <input type="text" class="form-control form-control-lg bg-light" name="name" value="{{ current_user.name }}" required>
+                        <input type="text" class="form-control form-control-lg bg-light" name="name"
+                            value="{{ current_user.name }}" required>
                     </div>
                     <div class="mb-4">
                         <label class="form-label text-secondary fw-semibold">Contact Phone</label>
-                        <input type="text" class="form-control form-control-lg bg-light" name="contact_info" value="{{ current_user.student_profile.contact_info or '' }}">
+                        <input type="text" class="form-control form-control-lg bg-light" name="contact_info"
+                            value="{{ current_user.student_profile.contact_info or '' }}">
                     </div>
                     <div class="mb-4">
-                        <label class="form-label text-secondary fw-semibold">Linkedin Id</label>
-                        <input type="link" class="form-control form-control-lg bg-light" name="link" value="{{ current_user.student_profile.contact_info or '' }}">
+                        <label class="form-label text-secondary fw-semibold">Email ID</label>
+                        <input type="email" class="form-control form-control-lg bg-light" name="email"
+                            value="{{ current_user.email }}" readonly>
                     </div>
-                    
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">LinkedIn ID / URL</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="linkedin_id"
+                            value="{{ current_user.student_profile.linkedin_id or '' }}">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Education (Branch, Degree)</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="education"
+                            value="{{ current_user.student_profile.education or '' }}"
+                            placeholder="e.g. BTech Computer Science">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">CGPA</label>
+                        <input type="number" step="0.01" class="form-control form-control-lg bg-light" name="cgpa"
+                            value="{{ current_user.student_profile.cgpa or '' }}" placeholder="e.g. 8.5">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Institution Name</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="institution_name"
+                            value="{{ current_user.student_profile.institution_name or '' }}"
+                            placeholder="e.g. VIT Vellore">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Skills (Comma separated)</label>
+                        <textarea class="form-control form-control-lg bg-light" name="skills"
+                            rows="3">{{ current_user.student_profile.skills or '' }}</textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Hobbies</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="hobbies"
+                            value="{{ current_user.student_profile.hobbies or '' }}">
+                    </div>
+
                     <div class="mb-4">
                         <label class="form-label text-secondary fw-semibold">Resume Document</label>
                         <div class="input-group">
-                            <input type="file" class="form-control form-control-lg bg-light" name="resume" accept=".pdf,.doc,.docx">
+                            <input type="file" class="form-control form-control-lg bg-light" name="resume"
+                                accept=".pdf,.doc,.docx">
                         </div>
                         {% if current_user.student_profile.resume_file %}
-                            <div class="mt-2 text-success fw-semibold"><i class="bi bi-file-earmark-check-fill me-1"></i> Resume successfully uploaded</div>
+                        <div class="mt-2 text-success fw-semibold"><i class="bi bi-file-earmark-check-fill me-1"></i>
+                            Resume successfully uploaded</div>
                         {% endif %}
                     </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Save Profile Changes</button>
-                    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Save
+                        Profile Changes</button>
+                    <a href="{{ url_for('student_dashboard') }}"
+                        class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
                 </form>
             </div>
         </div>

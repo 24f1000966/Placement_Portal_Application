@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row pt-4 justify-content-center mb-5">
+    <div class="col-md-8 col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+            <h3 class="fw-bold text-primary mb-0"><i class="bi bi-person-circle me-2"></i> Applicant Profile</h3>
+            <button onclick="history.back()" class="btn btn-outline-secondary fw-semibold rounded-pill px-4">Back</button>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-5">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-dark mb-1">{{ student.name }}</h2>
+                    <p class="text-muted fs-5 mb-0">{{ student.student_profile.institution_name or 'Institution Not Specified' }}</p>
+                    <span class="badge bg-primary bg-opacity-10 text-primary mt-2 rounded-pill px-3 py-2 fs-6">{{ student.student_profile.education or 'Education Not Provided' }}</span>
+                </div>
+
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4">Contact Info</h5>
+                <div class="row mb-4 bg-light p-4 rounded-4 mx-0">
+                    <div class="col-md-6 mb-3">
+                        <strong class="text-secondary d-block mb-1 text-uppercase opacity-75 small">Email</strong>
+                        <div class="text-dark fw-bold">{{ student.email }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3 border-start-md">
+                        <strong class="text-secondary d-block mb-1 text-uppercase opacity-75 small">Phone</strong>
+                        <div class="text-dark fw-bold">{{ student.student_profile.contact_info or 'N/A' }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <strong class="text-secondary d-block mb-1 text-uppercase opacity-75 small">LinkedIn</strong>
+                        <div class="text-dark fw-bold">
+                            {% if student.student_profile.linkedin_id %}
+                            <a href="{{ student.student_profile.linkedin_id }}" target="_blank" class="text-decoration-none"><i class="bi bi-linkedin me-1"></i> View Profile</a>
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6 border-start-md">
+                        <strong class="text-secondary d-block mb-1 text-uppercase opacity-75 small">Resume</strong>
+                        <div class="text-dark fw-bold">
+                            {% if student.student_profile.resume_file %}
+                            <a href="{{ url_for('uploaded_file', filename=student.student_profile.resume_file) }}" target="_blank" class="btn btn-sm btn-info text-white rounded-pill px-3"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Resume</a>
+                            {% else %}
+                            <span class="text-muted">No resume uploaded</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-4 pt-3">Academic & Skills Profile</h5>
+                <div class="row mb-3 mx-0">
+                    <div class="col-md-6 mb-4">
+                        <strong class="text-secondary d-block mb-1 text-uppercase opacity-75 small">Roll No</strong>
+                        <div class="text-dark fw-semibold fs-5">{{ student.student_profile.roll_no }}</div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <strong class="text-secondary d-block mb-1 text-uppercase opacity-75 small">CGPA</strong>
+                        <div class="text-success fw-bold fs-5">{{ student.student_profile.cgpa or 'N/A' }}</div>
+                    </div>
+                    <div class="col-12 mb-4">
+                        <strong class="text-secondary d-block mb-2 text-uppercase opacity-75 small">Skills</strong>
+                        <div class="text-dark fw-semibold">
+                            {% if student.student_profile.skills %}
+                                {% for skill in student.student_profile.skills.split(',') %}
+                                    <span class="badge bg-secondary bg-opacity-10 text-dark me-1 mb-1 px-3 py-2 rounded-pill border">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <strong class="text-secondary d-block mb-1 text-uppercase opacity-75 small">Hobbies & Interests</strong>
+                        <div class="text-dark fw-semibold">{{ student.student_profile.hobbies or 'N/A' }}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row pt-4 justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-5">
+                <h3 class="text-center fw-bold text-primary mb-4 pb-2 border-bottom">Company Profile</h3>
+                
+                <form method="POST" action="{{ url_for('company_profile') }}">
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Company Name</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="company_name" value="{{ current_user.company_profile.company_name }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">HR / Representative Name</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="hr_name" value="{{ current_user.company_profile.hr_contact or current_user.name }}" required>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">Registered Status</label>
+                            <input type="text" class="form-control form-control-lg bg-light fw-bold {% if current_user.company_profile.approval_status == 'Approved' %}text-success{% else %}text-warning{% endif %}" value="{{ current_user.company_profile.approval_status }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">Account Email</label>
+                            <input type="email" class="form-control form-control-lg bg-light" value="{{ current_user.email }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">Contact Email</label>
+                            <input type="email" class="form-control form-control-lg bg-light" name="contact_email" value="{{ current_user.company_profile.contact_email or '' }}" placeholder="info@company.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">Contact Number</label>
+                            <input type="text" class="form-control form-control-lg bg-light" name="contact_number" value="{{ current_user.company_profile.contact_number or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">HR Contact Number</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="hr_contact_number" value="{{ current_user.company_profile.hr_contact_number or '' }}">
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">Website</label>
+                            <input type="url" class="form-control form-control-lg bg-light" name="website" value="{{ current_user.company_profile.website or '' }}" placeholder="https://example.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary fw-semibold">LinkedIn ID</label>
+                            <input type="text" class="form-control form-control-lg bg-light" name="linkedin_id" value="{{ current_user.company_profile.linkedin_id or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">About Our Company</label>
+                        <textarea class="form-control form-control-lg bg-light" name="about" rows="4">{{ current_user.company_profile.about or '' }}</textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Save Profile Changes</button>
+                    <a href="{{ url_for('company_dashboard') }}" class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

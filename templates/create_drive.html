@@ -11,19 +11,39 @@
                         <input type="text" class="form-control form-control-lg bg-light" name="job_title" required>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Job Type</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="job_type" required>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label text-secondary fw-semibold">Job Description</label>
-                        <textarea class="form-control form-control-lg bg-light" name="description" rows="4" required></textarea>
+                        <textarea class="form-control form-control-lg bg-light" name="description" rows="4"
+                            required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Experience</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="experience" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-secondary fw-semibold">Eligibility Criteria</label>
                         <input type="text" class="form-control form-control-lg bg-light" name="eligibility" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Location</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Salary</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="salary" required>
+                    </div>
                     <div class="mb-4">
                         <label class="form-label text-secondary fw-semibold">Application Deadline</label>
-                        <input type="datetime-local" class="form-control form-control-lg bg-light" name="deadline" required>
+                        <input type="datetime-local" class="form-control form-control-lg bg-light" name="deadline"
+                            required>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Post Drive for Approval</button>
-                    <a href="{{ url_for('company_dashboard') }}" class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Post Drive
+                        for Approval</button>
+                    <a href="{{ url_for('company_dashboard') }}"
+                        class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
                 </form>
             </div>
         </div>

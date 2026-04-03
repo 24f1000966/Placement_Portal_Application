@@ -11,12 +11,32 @@
                         <input type="text" class="form-control form-control-lg bg-light" name="job_title" value="{{ drive.job_title }}" required>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Job Type</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="job_type" value="{{ drive.job_type }}" required>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label text-secondary fw-semibold">Job Description</label>
                         <textarea class="form-control form-control-lg bg-light" name="description" rows="4" required>{{ drive.description }}</textarea>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Experience</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="experience" value="{{ drive.experience }}" required>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label text-secondary fw-semibold">Eligibility Criteria</label>
                         <input type="text" class="form-control form-control-lg bg-light" name="eligibility" value="{{ drive.eligibility }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Location</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="location" value="{{ drive.location }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Salary</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="salary" value="{{ drive.salary }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Application Deadline</label>
+                        <input type="datetime-local" class="form-control form-control-lg bg-light" name="deadline" value="{{ drive.deadline.strftime('%Y-%m-%dT%H:%M') }}" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Update Drive</button>
                     <a href="{{ url_for('company_dashboard') }}" class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
