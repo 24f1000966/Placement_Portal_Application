@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Top Section -->
 <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
     <h2 class="text-primary fw-bold mb-0">Welcome {{ current_user.company_profile.company_name }}</h2>
     <div class="d-flex gap-2">
@@ -15,6 +16,17 @@
         administrator. Wait for approval before utilizing features.</h4>
 </div>
 {% else %}
+
+{% if rejected %}
+<div class="alert alert-danger shadow-sm border-0 rounded-4 p-4 text-center">
+    <h4 class="mb-0"><strong class="me-2">Rejected:</strong> Your account has been rejected by the administrator.
+        Contact the administrator for more information.</h4>
+</div>
+{% endif %}
+
+
+
+<!-- Upcoming Drives Section -->
 <div class="card shadow-sm border-0 mb-5 rounded-4">
     <div class="card-header bg-white py-3 border-bottom rounded-top-4">
         <h5 class="mb-0 text-primary fw-bold">Upcoming Drives</h5>
@@ -72,7 +84,7 @@
     </div>
 </div>
 
-
+<!-- Closed Drives Section -->
 <div class="card shadow-sm border-0 mb-5 rounded-4">
     <div class="card-header bg-light py-3 border-bottom rounded-top-4">
         <h5 class="mb-0 text-secondary fw-bold">Closed Drives</h5>

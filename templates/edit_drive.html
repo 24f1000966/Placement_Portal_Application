@@ -1,33 +1,25 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-lg border-0 mt-4">
-            <div class="card-header bg-warning text-dark text-center py-3">
-                <h4 class="mb-0">Edit Placement Drive</h4>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST">
+<div class="row pt-4 justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-5">
+                <h3 class="text-center fw-bold text-primary mb-4 pb-2 border-bottom">Update Placement Drive</h3>
+                <form method="POST" action="{{ url_for('edit_drive', drive_id=drive.id) }}">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Job Title</label>
-                        <input type="text" name="job_title" class="form-control bg-light" required value="{{ drive.job_title }}">
+                        <label class="form-label text-secondary fw-semibold">Job Title</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="job_title" value="{{ drive.job_title }}" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Description</label>
-                        <textarea name="description" class="form-control bg-light" rows="4" required>{{ drive.description }}</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Eligibility</label>
-                        <input type="text" name="eligibility" class="form-control bg-light" required value="{{ drive.eligibility }}">
+                        <label class="form-label text-secondary fw-semibold">Job Description</label>
+                        <textarea class="form-control form-control-lg bg-light" name="description" rows="4" required>{{ drive.description }}</textarea>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label fw-semibold text-secondary">Existing Deadline</label>
-                        <input type="text" class="form-control bg-light" value="{{ drive.deadline.strftime('%Y-%m-%d %H:%M') }}" readonly>
-                        <small class="text-muted">Deadline cannot be edited directly right now. Create a new drive if you need to extend deadline.</small>
+                        <label class="form-label text-secondary fw-semibold">Eligibility Criteria</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="eligibility" value="{{ drive.eligibility }}" required>
                     </div>
-                    <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold shadow-sm">Save Changes</button>
-                    <a href="{{ url_for('company_dashboard') }}" class="btn btn-secondary w-100 mt-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Update Drive</button>
+                    <a href="{{ url_for('company_dashboard') }}" class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
                 </form>
             </div>
         </div>

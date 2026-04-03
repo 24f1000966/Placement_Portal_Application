@@ -1,50 +1,29 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
-    <div class="container-fluid py-5 text-center">
-        <h1 class="display-5 fw-bold text-primary mb-4">Welcome to Placement Portal Application</h1>
-        <p class="col-md-8 mx-auto fs-4 text-muted">
-            The ultimate bridge between talented students and top-tier companies. Streamline recruitment, track
-            applications, and secure the best opportunities seamlessly.
-        </p>
-        <div class="mt-4 gap-3">
-            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg shadow-sm px-4 py-1 me-2 mb-2">Login Now</a>
-            <div class="d-inline-block dropdown me-2 mb-2">
-                <button class="btn btn-outline-primary btn-lg shadow-sm px-4 py-1 dropdown-toggle" type="button"
-                    id="registerMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    Register
-                </button>
-                <ul class="dropdown-menu shadow-sm" aria-labelledby="registerMenuButton">
-                    <li><a class="dropdown-item py-2" href="{{ url_for('register_student') }}">As a Student</a></li>
-                    <li><a class="dropdown-item py-2" href="{{ url_for('register_company') }}">As a Company</a></li>
+<div class="p-5 mb-4 bg-white rounded-4 shadow-sm text-center border">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold text-primary mb-3">University Placement Portal</h1>
+        <p class="col-md-8 mx-auto fs-4 text-secondary" style="line-height: 1.6;">Bridging the gap between students, recruiting organizations, and the university administration for a seamless and transparent recruitment progression.</p>
+        {% if not current_user.is_authenticated %}
+        <div class="mt-5 gap-3 d-flex justify-content-center">
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg rounded-pill shadow-sm px-5 fw-bold">Login</a>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary btn-lg dropdown-toggle rounded-pill shadow-sm px-5 fw-bold" type="button" id="regDrop" data-bs-toggle="dropdown">Register</button>
+                <ul class="dropdown-menu border-0 shadow-sm mt-2">
+                    <li><a class="dropdown-item py-2 fw-semibold text-secondary" href="{{ url_for('register_student') }}">As Student</a></li>
+                    <li><a class="dropdown-item py-2 fw-semibold text-secondary" href="{{ url_for('register_company') }}">As Company</a></li>
                 </ul>
             </div>
         </div>
-    </div>
-</div>
-
-<div class="row text-center mt-5 mb-5 g-4">
-    <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm p-4">
-            <h3 class="text-secondary fw-semibold">For Students</h3>
-            <p class="text-muted">Discover dream jobs, track application status in real-time, and kickstart your career
-                effortlessly.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm p-4">
-            <h3 class="text-secondary fw-semibold">For Companies</h3>
-            <p class="text-muted">Post upcoming placement drives, filter talented candidates, and manage shortlists with
-                ease.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm p-4">
-            <h3 class="text-secondary fw-semibold">For Administration</h3>
-            <p class="text-muted">Oversee ongoing activities, approve crucial drives, and maintain quality interactions
-                smoothly.</p>
-        </div>
+        {% else %}
+            {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-lg rounded-pill px-5 mt-4 fw-bold shadow-sm">Enter Dashboard</a>
+            {% elif current_user.role == 'company' %}
+            <a href="{{ url_for('company_dashboard') }}" class="btn btn-primary btn-lg rounded-pill px-5 mt-4 fw-bold shadow-sm">Enter Dashboard</a>
+            {% elif current_user.role == 'student' %}
+            <a href="{{ url_for('student_dashboard') }}" class="btn btn-primary btn-lg rounded-pill px-5 mt-4 fw-bold shadow-sm">Enter Dashboard</a>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}

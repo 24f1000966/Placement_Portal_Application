@@ -1,42 +1,36 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow-lg border-0 mt-4">
-            <div class="card-header bg-primary text-white text-center py-3">
-                <h4 class="mb-0">My Profile</h4>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Full Name</label>
-                        <input type="text" name="name" class="form-control bg-light" required value="{{ current_user.name }}">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Email address</label>
-                        <input type="email" class="form-control bg-light" readonly value="{{ current_user.email }}">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Roll Number</label>
-                        <input type="text" class="form-control bg-light" readonly value="{{ current_user.student_profile.roll_no }}">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Contact Info</label>
-                        <input type="text" name="contact_info" class="form-control bg-light" value="{{ current_user.student_profile.contact_info }}">
+<div class="row pt-4 justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-5">
+                <h3 class="text-center fw-bold text-primary mb-4 pb-2 border-bottom">Edit Profile</h3>
+                <form method="POST" action="{{ url_for('student_profile') }}" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Full Legal Name</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="name" value="{{ current_user.name }}" required>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label fw-semibold text-secondary">Upload Resume</label>
-                        {% if current_user.student_profile.resume_file %}
-                        <div class="mb-2">
-                            <a href="{{ url_for('uploaded_file', filename=current_user.student_profile.resume_file) }}" target="_blank" class="btn btn-sm btn-outline-info">View Current Resume</a>
-                        </div>
-                        {% endif %}
-                        <input type="file" name="resume" class="form-control bg-light" accept=".pdf,.doc,.docx">
-                        <small class="text-muted">Upload a new resume to replace the existing one.</small>
+                        <label class="form-label text-secondary fw-semibold">Contact Phone</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="contact_info" value="{{ current_user.student_profile.contact_info or '' }}">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">Update Profile</button>
-                    <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary w-100 mt-2">Back to Dashboard</a>
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Linkedin Id</label>
+                        <input type="link" class="form-control form-control-lg bg-light" name="link" value="{{ current_user.student_profile.contact_info or '' }}">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label text-secondary fw-semibold">Resume Document</label>
+                        <div class="input-group">
+                            <input type="file" class="form-control form-control-lg bg-light" name="resume" accept=".pdf,.doc,.docx">
+                        </div>
+                        {% if current_user.student_profile.resume_file %}
+                            <div class="mt-2 text-success fw-semibold"><i class="bi bi-file-earmark-check-fill me-1"></i> Resume successfully uploaded</div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">Save Profile Changes</button>
+                    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-secondary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-3">Cancel</a>
                 </form>
             </div>
         </div>

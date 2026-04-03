@@ -41,6 +41,7 @@ class CompanyProfile(db.Model):
 class StudentProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # linkedin=db.Column(db.Integer , )
     roll_no = db.Column(db.String(50), nullable=False, unique=True)
     contact_info = db.Column(db.String(100))
     resume_file = db.Column(db.String(200)) # stores filename
@@ -203,7 +204,7 @@ def register_company():
         
     return render_template('register_company.html')
 
-#admin routes
+# dmin Routes
 @app.route('/admin/dashboard')
 @login_required
 @admin_required
@@ -511,10 +512,6 @@ def init_db():
             db.session.add(admin)
             db.session.commit()
             print("Admin user created (admin@admin.com / admin)")
-
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template("404.html"), 404
 
 if __name__ == '__main__':
     if not os.path.exists('placement.db'):

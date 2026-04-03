@@ -1,20 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-
+<!-- Top Section -->
 <div class="row align-items-center mb-4 pb-3 border-bottom">
     <div class="col-md-6">
         <h2 class="text-primary fw-bold mb-0">Welcome {{ current_user.name }}</h2>
     </div>
     <div class="col-md-6 text-md-end mt-3 mt-md-0 d-flex justify-content-md-end gap-2">
-        <a href="{{ url_for('student_profile') }}"
-            class="btn btn-outline-primary fw-semibold rounded-pill px-4 shadow-sm">Edit Profile</a>
-        <a href="{{ url_for('student_history') }}"
-            class="btn btn-outline-info fw-semibold rounded-pill px-4 shadow-sm">History</a>
+        <a href="{{ url_for('student_profile') }}" class="btn btn-outline-primary fw-semibold rounded-pill px-4 shadow-sm">Edit Profile</a>
+        <a href="{{ url_for('student_history') }}" class="btn btn-outline-info fw-semibold rounded-pill px-4 shadow-sm">History</a>
         <a href="{{ url_for('logout') }}" class="btn btn-danger fw-semibold px-4 rounded-pill shadow-sm">Logout</a>
     </div>
 </div>
 
-
+<!-- Organizations Section -->
 <div class="card shadow-sm border-0 mb-5 rounded-4">
     <div class="card-header bg-white py-3 border-bottom rounded-top-4">
         <h5 class="mb-0 text-primary fw-bold">Recruiting Organizations</h5>
@@ -23,25 +21,18 @@
         <div class="table-responsive">
             <table class="table table-hover table-borderless align-middle mb-0">
                 <thead class="table-light text-muted">
-                    <tr>
-                        <th class="ps-4">Company Name</th>
-                        <th class="pe-4 text-end">Action</th>
-                    </tr>
+                    <tr><th class="ps-4">Company Name</th><th class="pe-4 text-end">Action</th></tr>
                 </thead>
                 <tbody>
                     {% for company in companies %}
                     <tr class="border-bottom">
                         <td class="ps-4 fw-bold text-dark">{{ company.company_name }}</td>
                         <td class="pe-4 text-end">
-                            <a href="{{ url_for('student_company', company_id=company.id) }}"
-                                class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View Details</a>
+                            <a href="{{ url_for('student_company', company_id=company.id) }}" class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View Details</a>
                         </td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="2" class="text-center py-4 text-muted">No approved companies available right now.
-                        </td>
-                    </tr>
+                    <tr><td colspan="2" class="text-center py-4 text-muted">No approved companies available right now.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -49,7 +40,7 @@
     </div>
 </div>
 
-
+<!-- Applied Drives Section -->
 <div class="card shadow-sm border-0 rounded-4">
     <div class="card-header bg-white py-3 border-bottom rounded-top-4">
         <h5 class="mb-0 text-success fw-bold">Applied Drives</h5>
@@ -58,13 +49,7 @@
         <div class="table-responsive">
             <table class="table table-hover table-borderless align-middle mb-0">
                 <thead class="table-light text-muted">
-                    <tr>
-                        <th class="ps-4" width="8%">Sr No</th>
-                        <th>Drive Name</th>
-                        <th>Company Name</th>
-                        <th>Date Applied</th>
-                        <th class="pe-4 text-end">Action</th>
-                    </tr>
+                    <tr><th class="ps-4" width="8%">Sr No</th><th>Drive Name</th><th>Company Name</th><th>Date Applied</th><th class="pe-4 text-end">Action</th></tr>
                 </thead>
                 <tbody>
                     {% for app in applications %}
@@ -74,15 +59,11 @@
                         <td class="text-secondary">{{ app.drive.company.company_profile.company_name }}</td>
                         <td>{{ app.applied_date.strftime('%Y-%m-%d') }}</td>
                         <td class="pe-4 text-end">
-                            <a href="{{ url_for('student_drive', drive_id=app.drive_id) }}"
-                                class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View Details</a>
+                            <a href="{{ url_for('student_drive', drive_id=app.drive_id) }}" class="btn btn-sm btn-primary fw-semibold rounded-pill shadow-sm px-4">View Details</a>
                         </td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted fw-semibold">You haven't applied to any
-                            drives yet.</td>
-                    </tr>
+                    <tr><td colspan="5" class="text-center py-5 text-muted fw-semibold">You haven't applied to any drives yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

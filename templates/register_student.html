@@ -1,38 +1,35 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="row justify-content-center">
+<div class="row pt-4 justify-content-center">
     <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-0 mt-4">
-            <div class="card-header bg-success text-white text-center py-3">
-                <h4 class="mb-0">Student Registration</h4>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-5">
+                <h3 class="text-center fw-bold text-success mb-4 pb-2 border-bottom">Student Registration</h3>
+                <form method="POST" action="{{ url_for('register_student') }}">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Full Name</label>
-                        <input type="text" name="name" class="form-control bg-light" required placeholder="John Doe">
+                        <label class="form-label text-secondary fw-semibold">Full Legal Name</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Email address</label>
-                        <input type="email" name="email" class="form-control bg-light" required placeholder="john@university.edu">
+                        <label class="form-label text-secondary fw-semibold">Email Address</label>
+                        <input type="email" class="form-control form-control-lg bg-light" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Roll Number</label>
-                        <input type="text" name="roll_no" class="form-control bg-light" required placeholder="ex: 2023CS101">
+                        <label class="form-label text-secondary fw-semibold">University Roll Number</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="roll_no" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Contact Info (Phone/Address)</label>
-                        <input type="text" name="contact_info" class="form-control bg-light" placeholder="Contact number or short address">
+                        <label class="form-label text-secondary fw-semibold">Contact Phone</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="contact_info" required>
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold text-secondary">Password</label>
-                        <input type="password" name="password" class="form-control bg-light" required placeholder="Choose a strong password">
+                    <div class="mb-4 pt-2">
+                        <label class="form-label text-secondary fw-semibold">Account Password</label>
+                        <input type="password" class="form-control form-control-lg bg-light" name="password" placeholder="xxxxx" required>
                     </div>
-                    <button type="submit" class="btn btn-success btn-lg w-100 fw-bold shadow-sm">Register</button>
+                    <button type="submit" class="btn btn-success btn-lg w-100 fw-bold rounded-pill shadow-sm mt-2">Submit Registration</button>
                 </form>
-                <div class="text-center mt-4 text-muted">
-                    Already have an account? <a href="{{ url_for('login') }}" class="text-decoration-none">Login here</a>
+                <div class="text-center mt-4 pt-3 border-top">
+                    <span class="text-muted fw-semibold">Already registered?</span> <a href="{{ url_for('login') }}" class="text-decoration-none fw-bold">Login here</a>
                 </div>
             </div>
         </div>

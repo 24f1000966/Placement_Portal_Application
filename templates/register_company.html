@@ -1,45 +1,43 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="row justify-content-center">
+<div class="row pt-4 justify-content-center">
     <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-0 mt-4">
-            <div class="card-header bg-info text-white text-center py-3">
-                <h4 class="mb-0">Company Registration</h4>
-            </div>
-            <div class="card-body p-4">
-                <form method="POST">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-5">
+                <h3 class="text-center fw-bold text-primary mb-4 pb-2 border-bottom">Company Registration</h3>
+                <form method="POST" action="{{ url_for('register_company') }}">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Representative Name</label>
-                        <input type="text" name="name" class="form-control bg-light" required placeholder="Jane Smith">
+                        <label class="form-label text-secondary fw-semibold">Representative Full Name</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Work Email</label>
-                        <input type="email" name="email" class="form-control bg-light" required placeholder="hr@company.com">
+                        <label class="form-label text-secondary fw-semibold">Representative Email</label>
+                        <input type="email" class="form-control form-control-lg bg-light" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Company Name</label>
-                        <input type="text" name="company_name" class="form-control bg-light" required placeholder="Tech Innovators Inc.">
+                        <label class="form-label text-secondary fw-semibold">Official Company Name</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="company_name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">HR Contact (Phone/Email)</label>
-                        <input type="text" name="hr_contact" class="form-control bg-light" placeholder="HR Phone or Email">
+                        <label class="form-label text-secondary fw-semibold">HR Contact Number</label>
+                        <input type="text" class="form-control form-control-lg bg-light" name="hr_contact" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-semibold text-secondary">Company Website</label>
-                        <input type="url" name="website" class="form-control bg-light" placeholder="https://www.company.com">
+                        <label class="form-label text-secondary fw-semibold">Corporate Website <span class="text-muted fw-normal">(Optional)</span></label>
+                        <input type="url" class="form-control form-control-lg bg-light" name="website" placeholder="https://">
                     </div>
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold text-secondary">Password</label>
-                        <input type="password" name="password" class="form-control bg-light" required placeholder="Choose a secure password">
+                    <div class="mb-4 pt-2">
+                        <label class="form-label text-secondary fw-semibold">Account Password</label>
+                        <input type="password" class="form-control form-control-lg bg-light" name="password" placeholder="xxxxx" required>
                     </div>
-                    <button type="submit" class="btn btn-info btn-lg w-100 text-white fw-bold shadow-sm">Register Company</button>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm mt-2">Submit Registration</button>
                 </form>
-                <div class="text-center mt-4 text-muted">
-                    Already registered? <a href="{{ url_for('login') }}" class="text-decoration-none text-info">Login here</a>
+                <div class="text-center mt-4 pt-3 border-top">
+                    <span class="text-muted fw-semibold">Already registered?</span> <a href="{{ url_for('login') }}" class="text-decoration-none fw-bold">Login here</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+
