@@ -1,0 +1,225 @@
+openapi: 3.0.0
+info:
+  title: Placement Portal API
+  version: 1.0.0
+  description: API documentation for Placement Portal Application built using Flask and SQLite.
+
+servers:
+  - url: http://127.0.0.1:5000
+
+paths:
+
+  /login:
+    post:
+      summary: User login
+      description: Authenticate user and create session
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+
+  /register/student:
+    post:
+      summary: Register a new student
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                roll_no:
+                  type: string
+                contact_info:
+                  type: string
+      responses:
+        '200':
+          description: Student registered successfully
+
+  /register/company:
+    post:
+      summary: Register a new company
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                company_name:
+                  type: string
+                hr_contact:
+                  type: string
+                website:
+                  type: string
+      responses:
+        '200':
+          description: Company registered successfully
+
+  /admin/dashboard:
+    get:
+      summary: Admin dashboard
+      description: View students, companies, drives, and applications
+      responses:
+        '200':
+          description: Dashboard data fetched
+
+  /admin/approve-company/{id}:
+    post:
+      summary: Approve or reject company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Company status updated
+
+  /admin/approve-drive/{id}:
+    post:
+      summary: Approve or reject placement drive
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Drive status updated
+
+  /company/dashboard:
+    get:
+      summary: Company dashboard
+      description: View company drives and applications
+      responses:
+        '200':
+          description: Company dashboard loaded
+
+  /company/create-drive:
+    post:
+      summary: Create placement drive
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                job_title:
+                  type: string
+                description:
+                  type: string
+                eligibility:
+                  type: string
+                deadline:
+                  type: string
+      responses:
+        '200':
+          description: Drive created
+
+  /company/drive/{drive_id}/applications:
+    get:
+      summary: View applications for a drive
+      parameters:
+        - name: drive_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of applications
+
+  /company/application/{application_id}:
+    post:
+      summary: Update application status
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Application status updated
+
+  /student/dashboard:
+    get:
+      summary: Student dashboard
+      description: View companies and applied drives
+      responses:
+        '200':
+          description: Dashboard loaded
+
+  /student/company/{company_id}:
+    get:
+      summary: View company details and drives
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Company details fetched
+
+  /student/drive/{drive_id}:
+    get:
+      summary: View drive details
+      parameters:
+        - name: drive_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Drive details fetched
+
+  /student/apply/{drive_id}:
+    post:
+      summary: Apply to placement drive
+      parameters:
+        - name: drive_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Application submitted
+
+  /student/history:
+    get:
+      summary: View application history
+      responses:
+        '200':
+          description: Application history fetched

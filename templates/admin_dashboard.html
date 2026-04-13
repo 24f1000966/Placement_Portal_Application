@@ -15,7 +15,7 @@
     </div>
     <div class="col-md-6">
         <form class="d-flex" action="{{ url_for('admin_dashboard') }}" method="GET">
-            <input class="form-control me-2 rounded" type="search" name="search"
+            <input class="form-control me-5 rounded" type="search" name="search"
                 placeholder="Search students or companies by name/ID..." value="{{ search }}">
             <button class="btn btn-outline-primary fw-semibold" type="submit">Search</button>
             {% if search %}
@@ -28,34 +28,34 @@
 <!-- Stats Cards -->
 <div class="row mb-5">
     <div class="col-md-3 mb-3 mb-md-0">
-        <div class="card text-white bg-primary shadow-sm rounded-4 h-100 border-0">
+        <div class="card text-white bg-primary  rounded-4 h-100 border-0">
             <div class="card-body">
-                <h6 class="card-title fw-semibold text-uppercase opacity-75">Total Students</h6>
+                <h6 class="card-title fw-semibold text-uppercase ">Total Students</h6>
                 <h2 class="card-text fw-bold mb-0">{{ total_students }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3 mb-3 mb-md-0">
-        <div class="card text-white bg-success shadow-sm rounded-4 h-100 border-0">
+        <div class="card text-white bg-success  rounded-4 h-100 border-0">
             <div class="card-body">
-                <h6 class="card-title fw-semibold text-uppercase opacity-75">Total Companies</h6>
+                <h6 class="card-title fw-semibold text-uppercase ">Total Companies</h6>
                 <h2 class="card-text fw-bold mb-0">{{ total_companies }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3 mb-3 mb-md-0">
-        <div class="card text-white bg-danger shadow-sm rounded-4 h-100 border-0">
+        <div class="card text-white bg-danger  rounded-4 h-100 border-0">
             <div class="card-body">
-                <h6 class="card-title fw-semibold text-uppercase opacity-75">Placement Drives</h6>
+                <h6 class="card-title fw-semibold text-uppercase ">Placement Drives</h6>
                 <h2 class="card-text fw-bold mb-0">{{ total_drives }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-warning shadow-sm rounded-4 h-100 border-0">
+        <div class="card bg-warning  rounded-4 h-100 border-0">
             <div class="card-body">
-                <h6 class="card-title fw-semibold text-uppercase text-dark opacity-75">Applications</h6>
-                <h2 class="card-text fw-bold mb-0 text-dark">{{ total_applications }}</h2>
+                <h6 class="card-title fw-semibold text-uppercase text-white ">Applications</h6>
+                <h2 class="card-text fw-bold mb-0 text-white">{{ total_applications }}</h2>
             </div>
         </div>
     </div>
@@ -63,9 +63,9 @@
 
 <!-- Pending Companies -->
 {% if not search %}
-<div class="card shadow-sm border-0 mb-5 rounded-4">
+<div class="card  border-0 mb-5 rounded-4">
     <div class="card-header bg-warning py-3 rounded-top-4">
-        <h5 class="mb-0 text-dark fw-bold">Company Applications (Pending Approval)</h5>
+        <h5 class="mb-0 text-white fw-bold">Company Applications (Pending Approval)</h5>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -93,13 +93,13 @@
                                 class="d-inline">
                                 <input type="hidden" name="status" value="Approved">
                                 <button type="submit"
-                                    class="btn btn-sm btn-success shadow-sm fw-semibold rounded-pill px-3">Approve</button>
+                                    class="btn btn-sm btn-success  fw-semibold rounded-pill px-3">Approve</button>
                             </form>
                             <form action="{{ url_for('admin_approve_company', id=company.id) }}" method="POST"
                                 class="d-inline">
                                 <input type="hidden" name="status" value="Rejected">
                                 <button type="submit"
-                                    class="btn btn-sm btn-danger shadow-sm fw-semibold rounded-pill px-3">Reject</button>
+                                    class="btn btn-sm btn-danger fw-semibold rounded-pill px-3">Reject</button>
                             </form>
                         </td>
                     </tr>
@@ -116,7 +116,7 @@
 {% endif %}
 
 <!-- Registered Companies -->
-<div class="card shadow-sm border-0 mb-5 rounded-4">
+<div class="card  border-0 mb-5 rounded-4">
     <div class="card-header bg-white py-3 border-bottom rounded-top-4">
         <h5 class="mb-0 text-primary fw-bold">Registered Companies</h5>
     </div>
@@ -179,7 +179,7 @@
 </div>
 
 <!-- Registered Students -->
-<div class="card shadow-sm border-0 mb-5 rounded-4">
+<div class="card  border-0 mb-5 rounded-4">
     <div class="card-header bg-white py-3 border-bottom rounded-top-4">
         <h5 class="mb-0 text-success fw-bold">Registered Students</h5>
     </div>
